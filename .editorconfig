@@ -1,4 +1,8 @@
-﻿[*.{cs,vb}]
+﻿[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+indent_style = space
+indent_size = 4
 
-# IDE0040: Добавьте модификаторы доступности
-dotnet_style_require_accessibility_modifiers = for_non_interface_members
