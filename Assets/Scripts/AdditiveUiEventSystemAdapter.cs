@@ -15,6 +15,10 @@ namespace MyGame
         readonly IPublisher<AnimationSwitchEventSubscriber, AnimationSwitchEvent> publisherOfAnimationSwitchEvent;
         [Inject]
         readonly IPublisher<CreateCubeIntention> publisherOfCreateCubeIntention;
+        [Inject]
+        readonly IPublisher<AdditiveSceneUnloadedEvent> publisherOfAdditiveSceneUnloadedEvent;
+        [Inject]
+        readonly AdditiveSceneController additiveSceneController;
 
         public void OnToggleOneValueChanged(bool value)
         {
@@ -42,9 +46,11 @@ namespace MyGame
         {
             OnToggleTwoValueChanged(true);
             OnToggleTwoValueChanged(false);
-            await SceneManager.UnloadSceneAsync("SampleScene");
+            await SceneManager.UnloadSceneAsync(additiveSceneController.sceneName);
             OnToggleTwoValueChanged(true);
             OnToggleTwoValueChanged(false);
+
+            publisherOfAdditiveSceneUnloadedEvent.Publish(new AdditiveSceneUnloadedEvent(additiveSceneController.sceneName));
         }
     }
 }

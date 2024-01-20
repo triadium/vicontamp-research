@@ -1,7 +1,7 @@
 namespace MyGame
 {
     // Перечисление для разделения шин событий по ключам ("топикам").
-    // Смотри класс CurvedAnimationView, MessagePipePubSub и GamePresenter.
+    // Смотри класс CurvedAnimationView, MessagePipePubSub и GameController.
     public enum AnimationSwitchEventSubscriber
     {
         First,

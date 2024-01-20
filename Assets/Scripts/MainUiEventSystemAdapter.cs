@@ -12,34 +12,28 @@ namespace MyGame
     public class MainUiEventSystemAdapter : MonoBehaviour
     {
         [Inject]
-        readonly IPublisher<AnimationSwitchEventSubscriber, AnimationSwitchEvent> publisherOfAnimationSwitchEvent;
-        [Inject]
-        readonly IPublisher<CreateCubeIntention> publisherOfCreateCubeIntention;
+        readonly IAsyncPublisher<LoadAdditiveSceneIntention> publisherOfLoadAdditiveSceneIntention;
 
-        public void OnToggleOneValueChanged(bool value)
+        public async void OnButtonLoadAdditive()
         {
-            Debug.Log(String.Format("Toggle One! New value: {0}", value));
-            publisherOfAnimationSwitchEvent.Publish(AnimationSwitchEventSubscriber.First, new AnimationSwitchEvent(value));
-        }
+            // Комбинация async и sync кода позволяет формировать императивный код без "танцев" вокруг проблем корутин.
 
-        public void OnToggleTwoValueChanged(bool value)
-        {
-            Debug.Log(String.Format("Toggle Two! New value: {0}", value));
-            publisherOfAnimationSwitchEvent.Publish(AnimationSwitchEventSubscriber.Second, new AnimationSwitchEvent(value));
-        }
+            // Ждём некоторое время и потом только публикуем асинхронное событие.
+            await UniTask.Delay(3000, DelayType.Realtime, PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy(), true).SuppressCancellationThrow();
+            // Какой-то селектор в UI позволил определить, что есть намерение загрузить "SampleScene".
+            // Например, была выбрана миссия и через событие, что миссия выбрана на глобальной карте
+            // был обновлен общий контекст, который может храниться, например, в контроллере сцены.
+            // Асинхронное событие должно отправляться и приниматься только асинхронным издателем и подписчиком,
+            // иначе это будут разные шины и "отлов" событий не будет происходить.
+            // Publish - не асинхронный метод и работает как "кинул и забыл"
+            // и поэтому последующий вывода в лог произойдет почти моментально.
+            //publisherOfLoadAdditiveSceneIntention.Publish(new LoadAdditiveSceneIntention("SampleScene"), this.GetCancellationTokenOnDestroy());
 
-        public void OnButtonOne()
-        {
-            publisherOfCreateCubeIntention.Publish(new CreateCubeIntention(Random.Range(-3f,3f), Random.Range(-3f, 3f), Random.Range(1, 101) >=50 ));
-        }
+            // Так как мы ждём обработку асинхронного события, то мы как бы "помним", что у нас идёт обработка
+            // и поэтому последующий вывода в лог произойдет с ощутимой задержкой.
+            await publisherOfLoadAdditiveSceneIntention.PublishAsync(new LoadAdditiveSceneIntention("SampleScene"), this.GetCancellationTokenOnDestroy());
 
-        public async void OnButtonUnloadAdditive()
-        {
-            OnToggleTwoValueChanged(true);
-            OnToggleTwoValueChanged(false);
-            await SceneManager.UnloadSceneAsync("SampleScene");
-            OnToggleTwoValueChanged(true);
-            OnToggleTwoValueChanged(false);
+            Debug.Log("Intention to load additive scene was handled!");
         }
     }
 }

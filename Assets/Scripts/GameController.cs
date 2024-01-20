@@ -6,14 +6,14 @@ using MessagePipe;
 
 namespace MyGame
 {   
-    public class GamePresenter : ITickable, IStartable, IDisposable
+    public class GameController : ITickable, IStartable, IDisposable
     {
         readonly HelloWorldService helloWorldService;
         readonly IPublisher<int> publisher;
         readonly ISubscriber<AnimationSwitchEventSubscriber, AnimationSwitchEvent> subscriber;        
         IDisposable disposable;
 
-        public GamePresenter(HelloWorldService helloWorldService, IPublisher<int> publisher, ISubscriber<AnimationSwitchEventSubscriber, AnimationSwitchEvent> subscriber)
+        public GameController(HelloWorldService helloWorldService, IPublisher<int> publisher, ISubscriber<AnimationSwitchEventSubscriber, AnimationSwitchEvent> subscriber)
         {            
             this.helloWorldService = helloWorldService;
             this.publisher = publisher;
@@ -42,7 +42,7 @@ namespace MyGame
         void IDisposable.Dispose()
         {
             disposable.Dispose();
-            Debug.Log("GamePresenter Disposed!");
+            Debug.Log("GameController Disposed!");
         }
 
         void ITickable.Tick()

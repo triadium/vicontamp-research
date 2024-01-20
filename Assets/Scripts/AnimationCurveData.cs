@@ -9,7 +9,7 @@ namespace MyGame
     // Смотри GameLifetimeScope
 
     [CreateAssetMenu]
-    public class AnimationCurveData : ScriptableObject
+    public sealed class AnimationCurveData : ScriptableObject
     {
         public AnimationCurve curve;
     }

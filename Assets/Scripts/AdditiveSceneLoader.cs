@@ -1,36 +1,44 @@
-﻿using System;
+using System;
+using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using VContainer;
 using VContainer.Unity;
 using MessagePipe;
+using UnityEngine.SceneManagement;
 
 namespace MyGame
 {
     public class AdditiveSceneLoader: IStartable, IDisposable
     {
-        readonly IObjectResolver container;
-        readonly ISubscriber<CreateCubeIntention> subscriber;
-        readonly CubeAssetData data;
+        readonly GameLifetimeScope scope;
+        readonly IAsyncSubscriber<LoadAdditiveSceneIntention> subscriberOfLoadAdditiveSceneIntention;        
         IDisposable disposable;
-
-        public AdditiveSceneLoader(IObjectResolver container, ISubscriber<CreateCubeIntention> subscriber, CubeAssetData data)
+        
+        public AdditiveSceneLoader(GameLifetimeScope scope, IAsyncSubscriber<LoadAdditiveSceneIntention> subscriberOfLoadAdditiveSceneIntention)
         {
-            this.container = container;
-            this.subscriber = subscriber;
-            this.data = data;
+            this.scope = scope;
+            this.subscriberOfLoadAdditiveSceneIntention = subscriberOfLoadAdditiveSceneIntention;            
         }
 
-        void OnCreateCubeIntention(CreateCubeIntention e)
+        async UniTask OnLoadAdditiveSceneIntention(LoadAdditiveSceneIntention e, CancellationToken cancellationToken)
         {
-            var prefab = data?.cube ?? throw new NullReferenceException("Cube prefab not found!");
-            container.Instantiate(prefab, new Vector3(e.x, e.y, prefab.transform.position.z), Quaternion.identity);
+            using (LifetimeScope.Enqueue(innerBuilder =>
+            {
+                innerBuilder.RegisterInstance(scope.CubeAnimationParameters);
+                innerBuilder.RegisterInstance(scope.CubePrefabs);
+            }))
+            {
+                await SceneManager.LoadSceneAsync(e.name, LoadSceneMode.Additive).WithCancellation(cancellationToken);
+            }
+
+            await UniTask.Delay(3000, DelayType.Realtime, PlayerLoopTiming.Update, cancellationToken, true).SuppressCancellationThrow();
         }
 
         void IStartable.Start()
         {
             var d = DisposableBag.CreateBuilder();
-            subscriber.Subscribe(OnCreateCubeIntention).AddTo(d);
+            subscriberOfLoadAdditiveSceneIntention.Subscribe(OnLoadAdditiveSceneIntention).AddTo(d);
             disposable = d.Build();
         }
 
@@ -39,6 +47,5 @@ namespace MyGame
             disposable.Dispose();
             Debug.Log( String.Format("{0} Disposed!", this.GetType().Name));
         }
-
     }
 }

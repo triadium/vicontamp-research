@@ -9,7 +9,7 @@ namespace MyGame
     // Смотри GameLifetimeScope
 
     [CreateAssetMenu]
-    public class CubeAssetData : ScriptableObject
+    public sealed class CubeAssetData : ScriptableObject
     {
         public GameObject cube;
     }
