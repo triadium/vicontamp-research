@@ -9,6 +9,7 @@ namespace MyGame
     public interface IMainUiViewController {
         void TurnLoadAdditive(bool on);
         void SetAdditiveSceneCount(int count);
+        void SetAdditiveSceneText(string text);
     }
 
     public class MainUiViewController: MonoBehaviour, IMainUiViewController
@@ -29,6 +30,11 @@ namespace MyGame
         {
             txtAdditiveSceneCounter.text = count.ToString();
         }
+
+        void IMainUiViewController.SetAdditiveSceneText(string text)
+        {
+            txtAdditiveSceneCounter.text = text;
+        }        
 
         // Use this for initialization
         void Start()

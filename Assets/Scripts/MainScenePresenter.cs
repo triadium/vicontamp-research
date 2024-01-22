@@ -2,6 +2,10 @@ using System;
 using UnityEngine;
 using VContainer.Unity;
 using MessagePipe;
+using Random = UnityEngine.Random;
+using Hime.Redist; 
+using MathExp; // default namespace for the parser is the grammar's name
+
 
 namespace MyGame
 {
@@ -41,6 +45,19 @@ namespace MyGame
                 // это обычная "проблема" унификации подхода к управлению UI и другими элементами представления
                 this.uiViewController.SetAdditiveSceneCount(this.additiveSceneCount);
                 this.uiViewController.TurnLoadAdditive(this.additiveSceneCount <= 0);
+
+                string expression = String.Format("({0} + {1}) * {2}", Random.Range(1, 100), Random.Range(1, 100), Random.Range(1, 100));
+
+                Evaluator evaluator = new Evaluator();
+                MathExpLexer lexer = new MathExpLexer(expression);
+                MathExpParser parser = new MathExpParser(lexer, evaluator);
+                // Executes the parsing
+                ParseResult result = parser.Parse();
+                var resultStr = String.Format("{0} = {1}\n", expression, evaluator.Result);
+
+                Debug.Log(resultStr);
+                uiViewController.SetAdditiveSceneText(resultStr);
+
             }).AddTo(d);
             disposable = d.Build();
         }
@@ -53,7 +70,7 @@ namespace MyGame
 
         void IPostStartable.PostStart()
         {
-            uiViewController.TurnLoadAdditive(this.additiveSceneCount <= 0);            
+            uiViewController.TurnLoadAdditive(this.additiveSceneCount <= 0);
             Debug.Log("Main scene loaded!");
         }
     }
