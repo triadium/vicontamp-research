@@ -25,6 +25,7 @@ namespace MyGame
         {
             using (LifetimeScope.Enqueue(innerBuilder =>
             {
+                // innerBuilder.RegisterMessageBroker<int>(scope.CommonOptionsOfMessagePipe);
                 innerBuilder.RegisterInstance(scope.CubeAnimationParameters);
                 innerBuilder.RegisterInstance(scope.CubePrefabs);
             }))

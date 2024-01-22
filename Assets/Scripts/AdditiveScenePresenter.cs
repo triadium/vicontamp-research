@@ -5,14 +5,14 @@ using MessagePipe;
 
 namespace MyGame
 {
-    public class AdditiveSceneController: IPostStartable, IDisposable
+    public class AdditiveScenePresenter: IPostStartable, IDisposable
     {
         public readonly string sceneName;
 
-        readonly IUiViewController uiViewController;
+        readonly IAdditiveUiViewController uiViewController;
         readonly IPublisher<AdditiveSceneLoadedEvent> publisherOfAdditiveSceneLoadedEvent;
 
-        public AdditiveSceneController(string sceneName, IPublisher<AdditiveSceneLoadedEvent> publisherOfAdditiveSceneLoadedEvent, IUiViewController uiViewController)
+        public AdditiveScenePresenter(string sceneName, IPublisher<AdditiveSceneLoadedEvent> publisherOfAdditiveSceneLoadedEvent, IAdditiveUiViewController uiViewController)
         {
             this.sceneName = sceneName;
             this.publisherOfAdditiveSceneLoadedEvent = publisherOfAdditiveSceneLoadedEvent;
@@ -26,7 +26,7 @@ namespace MyGame
 
         void IPostStartable.PostStart()
         {
-            uiViewController.SetText(this.sceneName);
+            uiViewController.SetSpecText(this.sceneName);
             publisherOfAdditiveSceneLoadedEvent.Publish(new AdditiveSceneLoadedEvent(this.sceneName));
             Debug.Log(String.Format("Additive scene '{0}' loaded!", this.sceneName));
         }

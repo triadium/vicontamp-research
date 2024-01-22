@@ -18,7 +18,7 @@ namespace MyGame
         [Inject]
         readonly IPublisher<AdditiveSceneUnloadedEvent> publisherOfAdditiveSceneUnloadedEvent;
         [Inject]
-        readonly AdditiveSceneController additiveSceneController;
+        readonly AdditiveScenePresenter additiveScenePresenter;
 
         public void OnToggleOneValueChanged(bool value)
         {
@@ -44,13 +44,13 @@ namespace MyGame
 
         public async void OnButtonUnloadAdditive()
         {
+            publisherOfAdditiveSceneUnloadedEvent.Publish(new AdditiveSceneUnloadedEvent(additiveScenePresenter.sceneName));
             OnToggleTwoValueChanged(true);
             OnToggleTwoValueChanged(false);
-            await SceneManager.UnloadSceneAsync(additiveSceneController.sceneName);
+            await SceneManager.UnloadSceneAsync(additiveScenePresenter.sceneName);
             OnToggleTwoValueChanged(true);
             OnToggleTwoValueChanged(false);
 
-            publisherOfAdditiveSceneUnloadedEvent.Publish(new AdditiveSceneUnloadedEvent(additiveSceneController.sceneName));
         }
     }
 }

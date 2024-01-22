@@ -6,14 +6,14 @@ using MessagePipe;
 
 namespace MyGame
 {   
-    public class GameController : ITickable, IStartable, IDisposable
+    public class AuxServicedController : ITickable, IStartable, IDisposable
     {
         readonly HelloWorldService helloWorldService;
         readonly IPublisher<int> publisher;
         readonly ISubscriber<AnimationSwitchEventSubscriber, AnimationSwitchEvent> subscriber;        
         IDisposable disposable;
 
-        public GameController(HelloWorldService helloWorldService, IPublisher<int> publisher, ISubscriber<AnimationSwitchEventSubscriber, AnimationSwitchEvent> subscriber)
+        public AuxServicedController(HelloWorldService helloWorldService, IPublisher<int> publisher, ISubscriber<AnimationSwitchEventSubscriber, AnimationSwitchEvent> subscriber)
         {            
             this.helloWorldService = helloWorldService;
             this.publisher = publisher;
