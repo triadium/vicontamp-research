@@ -4,6 +4,7 @@ using MessagePipe;
 
 namespace MyGame
 {
+    // Для тестов шин с топиками.    
     public class MessagePipePubSub : ITickable, IPostStartable
     {        
         readonly IPublisher<AnimationSwitchEventSubscriber, AnimationSwitchEvent> publisher;
@@ -14,6 +15,7 @@ namespace MyGame
 
         void IPostStartable.PostStart()
         {
+            // Отправляем сообщение через шину с топиком AnimationSwitchEventSubscriber.First
             publisher.Publish(AnimationSwitchEventSubscriber.First, new AnimationSwitchEvent(true));
         }
 

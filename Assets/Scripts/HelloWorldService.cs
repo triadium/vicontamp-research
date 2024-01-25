@@ -1,5 +1,6 @@
 namespace MyGame
 {
+    // Для тестов
     public class HelloWorldService
     {
         public void Hello()

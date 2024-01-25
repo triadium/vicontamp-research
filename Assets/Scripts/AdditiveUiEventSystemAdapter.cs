@@ -9,6 +9,19 @@ using Random = UnityEngine.Random;
 
 namespace MyGame
 {
+    // Адаптеры UI Event System обычно определяются отдельно от UI View Controller,
+    // потому что не хочется смешивать глобальные намерения с локальными действиями.
+    // В то же время для однозначного намерения делать цепочку - 
+    // UI View Controller -> Presenter -> Сообщение - тоже не очень хочется и прибегают 
+    // к такому подходу. Им нельзя злоупотреблять, потому что очень легко скатиться к отправке
+    // сообщений по каждому "чиху" из интерфейса по глобальным шинам и обработку всего через события.
+    // Фактически, 
+    // UI Event System передаёт события и намерения, которые предназначены 
+    // не только текущим представлениям, которыми управляет UI View Controller,
+    // но и другим подсистемам. 
+    // UI View Controller не должен отправлять события и намерения, а передавать локальные события
+    // инстансу Presenter через его интерфейс. Например, что-то там выбрано в списке и нужно как-то на это локально
+    // отреагировать, но это никак должно не затрагивает другие части системы. А если надо, то это забота Presenter.    
     public class AdditiveUiEventSystemAdapter : MonoBehaviour
     {
         [Inject]
@@ -44,13 +57,14 @@ namespace MyGame
 
         public async void OnButtonUnloadAdditive()
         {
-            publisherOfAdditiveSceneUnloadedEvent.Publish(new AdditiveSceneUnloadedEvent(additiveScenePresenter.sceneName));
             OnToggleTwoValueChanged(true);
             OnToggleTwoValueChanged(false);
             await SceneManager.UnloadSceneAsync(additiveScenePresenter.sceneName);
+            // Как раз без дополнительного намерения (intention) может выйти казус - асинхронная операция на выгруженной сцене может не сработать.
+            // Здесь использую синхронную передачи сообщения и поток правильно работает.
+            publisherOfAdditiveSceneUnloadedEvent.Publish(new AdditiveSceneUnloadedEvent(additiveScenePresenter.sceneName));
             OnToggleTwoValueChanged(true);
             OnToggleTwoValueChanged(false);
-
         }
     }
 }

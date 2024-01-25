@@ -7,6 +7,9 @@ using MessagePipe;
 
 namespace MyGame
 {
+    // Используеся Instantiate интерфейса контейнера (IObjectResolver)
+    // и это позволяет внедрять зависимости из областей видимости в новый объект Unity.
+    // Если на объекте нет компонент с внедряемыми зависимостями, то лучше использовать "родной" Unity метод.
     public class CubeCreator: IStartable, IDisposable
     {
         readonly IObjectResolver container;

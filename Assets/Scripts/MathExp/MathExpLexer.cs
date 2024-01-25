@@ -23,6 +23,9 @@ namespace MathExp
 		/// </summary>
 		private static readonly Automaton commonAutomaton;
 
+		// Добавил, так как пока генератор по грамматике не умеет генерировать
+		// загрузку автоматона из внешних ресурсов, а только из внутренних ресурсов сборки,
+		// что в Unity не получается реализовать без вызова специального функционала.
 		static MathExpLexer() {
 			TextAsset asset = Resources.Load("MathExpLexer") as TextAsset;
 			Stream s = new MemoryStream(asset.bytes);
@@ -30,6 +33,8 @@ namespace MathExp
 			commonAutomaton = new Automaton(br);
 		}
 
+		// Интересно, почему не статичным классом со статичными константами и не перечислением?
+		
 		/// <summary>
 		/// Contains the constant IDs for the terminals for this lexer
 		/// </summary>
@@ -45,6 +50,9 @@ namespace MathExp
 			/// </summary>
 			public const int TerminalNumber = 0x0007;
 		}
+
+		// Интересно, почему не статичным классом со статичными константами и не перечислением?
+
 		/// <summary>
 		/// Contains the constant IDs for the contexts for this lexer
 		/// </summary>

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace MyGame
 {
+    // Интерфейс для использования в соответствующем Presenter
     public interface IMainUiViewController {
         void TurnLoadAdditive(bool on);
         void SetAdditiveSceneCount(int count);

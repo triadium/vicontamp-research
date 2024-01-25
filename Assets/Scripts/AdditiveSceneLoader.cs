@@ -9,6 +9,12 @@ using UnityEngine.SceneManagement;
 
 namespace MyGame
 {
+
+    // Загрузчик дополнений сцен.
+    // Использует из GameLifetimeScope уже загруженные ассеты.
+    // Так как намерение на загрузку вызывается в асинхронном режиме, то и подписываться должны на асинхронную шину.
+    // Через асинхронный обработчик сможем управлять временем передачи управления издателю сообщения, если он ждёт.
+    // CancellationToken очень помогает избегать лишних проверок на удаление объекта из "дерева" Unity.
     public class AdditiveSceneLoader: IStartable, IDisposable
     {
         readonly GameLifetimeScope scope;
@@ -25,6 +31,7 @@ namespace MyGame
         {
             using (LifetimeScope.Enqueue(innerBuilder =>
             {
+                // См. GameLifetimeScope с такой же строкой
                 // innerBuilder.RegisterMessageBroker<int>(scope.CommonOptionsOfMessagePipe);
                 innerBuilder.RegisterInstance(scope.CubeAnimationParameters);
                 innerBuilder.RegisterInstance(scope.CubePrefabs);

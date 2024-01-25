@@ -48,6 +48,7 @@ namespace MyGame
 
                 string expression = String.Format("({0} + {1}) * {2}", Random.Range(1, 100), Random.Range(1, 100), Random.Range(1, 100));
 
+                // Для тестов внедрения парсера выражений по описанной грамматике и сгенерированным автоматонам с помощью himecc
                 Evaluator evaluator = new Evaluator();
                 MathExpLexer lexer = new MathExpLexer(expression);
                 MathExpParser parser = new MathExpParser(lexer, evaluator);

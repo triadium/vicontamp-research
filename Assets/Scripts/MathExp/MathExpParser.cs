@@ -10,6 +10,7 @@ using Hime.Redist;
 using Hime.Redist.Parsers;
 using UnityEngine;
 
+// Исправил код после генератора для встраивания в Unity
 namespace MathExp
 {
 	/// <summary>
@@ -24,6 +25,9 @@ namespace MathExp
 		/// 
 		private static readonly LRkAutomaton commonAutomaton;
 
+		// Добавил, так как пока генератор по грамматике не умеет генерировать
+		// загрузку автоматона из внешних ресурсов, а только из внутренних ресурсов сборки,
+		// что в Unity не получается реализовать без вызова специального функционала.
 		static MathExpParser() {
 			
 			TextAsset asset = Resources.Load("MathExpParser") as TextAsset;
@@ -31,6 +35,8 @@ namespace MathExp
 			BinaryReader br = new BinaryReader(s);
 			commonAutomaton = new LRkAutomaton(br);
 		}
+
+		// Интересно, почему не статичным классом со статичными константами и не перечислением?
 
 		/// <summary>
 		/// Contains the constant IDs for the variables and virtuals in this parser
@@ -75,46 +81,64 @@ namespace MathExp
 		/// The virtuals are in an order consistent with the automaton,
 		/// so that virtual indices in the automaton can be used to retrieve the virtuals in this table
 		/// </remarks>
-		private static readonly Symbol[] virtuals = {
- };
+		private static readonly Symbol[] virtuals = {};
+		
+		// Определил как интерфейс, так как мне нравится так больше
+
 		/// <summary>
 		/// Represents a set of semantic actions in this parser
 		/// </summary>
 		[GeneratedCodeAttribute("Hime.SDK", "4.3.0")]
-		public class Actions
+		public interface IActions
 		{
 			/// <summary>
 			/// The OnNumber semantic action
 			/// </summary>
-			public virtual void OnNumber(Symbol head, SemanticBody body) {}
+			void OnNumber(Symbol head, SemanticBody body);
 			/// <summary>
 			/// The OnMult semantic action
 			/// </summary>
-			public virtual void OnMult(Symbol head, SemanticBody body) {}
+			void OnMult(Symbol head, SemanticBody body);
 			/// <summary>
 			/// The OnDiv semantic action
 			/// </summary>
-			public virtual void OnDiv(Symbol head, SemanticBody body) {}
+			void OnDiv(Symbol head, SemanticBody body);
 			/// <summary>
 			/// The OnPlus semantic action
 			/// </summary>
-			public virtual void OnPlus(Symbol head, SemanticBody body) {}
+			void OnPlus(Symbol head, SemanticBody body);
 			/// <summary>
 			/// The OnMinus semantic action
 			/// </summary>
-			public virtual void OnMinus(Symbol head, SemanticBody body) {}
+			void OnMinus(Symbol head, SemanticBody body);
+
+		}
+
+		// И "пустышку" для простого парсинга
+
+		/// <summary>
+		/// Represents a set of semantic no-actions in this parser
+		/// </summary>
+		[GeneratedCodeAttribute("Hime.SDK", "4.3.0")]
+		private class NoActions: IActions
+		{
+			public void OnNumber(Symbol head, SemanticBody body) {}			
+			public void OnMult(Symbol head, SemanticBody body) {}			
+			public void OnDiv(Symbol head, SemanticBody body) {}
+			public void OnPlus(Symbol head, SemanticBody body) {}			
+			public void OnMinus(Symbol head, SemanticBody body) {}
 
 		}
 		/// <summary>
 		/// Represents a set of empty semantic actions (do nothing)
 		/// </summary>
-		private static readonly Actions noActions = new Actions();
+		private static readonly NoActions noActions = new NoActions();
 		/// <summary>
 		/// Gets the set of semantic actions in the form a table consistent with the automaton
 		/// </summary>
 		/// <param name="input">A set of semantic actions</param>
 		/// <returns>A table of semantic actions</returns>
-		private static SemanticAction[] GetUserActions(Actions input)
+		private static SemanticAction[] GetUserActions(IActions input)
 		{
 			SemanticAction[] result = new SemanticAction[5];
 			result[0] = new SemanticAction(input.OnNumber);
@@ -149,7 +173,7 @@ namespace MathExp
 		/// </summary>
 		/// <param name="lexer">The input lexer</param>
 		/// <param name="actions">The set of semantic actions</param>
-		public MathExpParser(MathExpLexer lexer, Actions actions) : base (commonAutomaton, variables, virtuals, GetUserActions(actions), lexer) { }
+		public MathExpParser(MathExpLexer lexer, IActions actions) : base (commonAutomaton, variables, virtuals, GetUserActions(actions), lexer) { }
 		/// <summary>
 		/// Initializes a new instance of the parser
 		/// </summary>
@@ -161,7 +185,18 @@ namespace MathExp
 		/// Visitor interface
 		/// </summary>
 		[GeneratedCodeAttribute("Hime.SDK", "4.3.0")]
-		public class Visitor
+		public interface IVisitor
+		{
+			void OnTerminalSeparator(ASTNode node);
+			void OnTerminalNumber(ASTNode node);
+			void OnVariableExpAtom(ASTNode node);
+			void OnVariableExpFactor(ASTNode node);
+			void OnVariableExpTerm(ASTNode node);
+			void OnVariableExp(ASTNode node);
+		}
+
+		[GeneratedCodeAttribute("Hime.SDK", "4.3.0")]
+		public class Visitor: IVisitor
 		{
 			public virtual void OnTerminalSeparator(ASTNode node) {}
 			public virtual void OnTerminalNumber(ASTNode node) {}
@@ -176,7 +211,7 @@ namespace MathExp
 		/// <param name="result">The parse result</param>
 		/// <param name="visitor">The visitor to use</param>
 		/// </summary>
-		public static void Visit(ParseResult result, Visitor visitor)
+		public static void Visit(ParseResult result, IVisitor visitor)
 		{
 			VisitASTNode(result.Root, visitor);
 		}
@@ -186,7 +221,7 @@ namespace MathExp
 		/// </summary>
 		/// <param name="node">The AST node to start from</param>
 		/// <param name="visitor">The visitor to use</param>
-		public static void VisitASTNode(ASTNode node, Visitor visitor)
+		public static void VisitASTNode(ASTNode node, IVisitor visitor)
 		{
 			for (int i = 0; i < node.Children.Count; i++)
 				VisitASTNode(node.Children[i], visitor);

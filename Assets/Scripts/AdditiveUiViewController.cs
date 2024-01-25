@@ -1,17 +1,43 @@
+using System;
 using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
 
 namespace MyGame
 {
-    public interface IAdditiveUiViewController {
+    // Интерфейс для использования в соответствующем Presenter
+    public interface IAdditiveUiViewController
+    {
+        AdditiveScenePresenter Presenter { get; set; }
         void SetSpecText(string text);
     }
 
-    public class AdditiveUiViewController: MonoBehaviour, IAdditiveUiViewController
+    public class AdditiveUiViewController : MonoBehaviour, IAdditiveUiViewController
     {
+        // Так не будет работать потому, что у нас presenter должен создаваться фабрикой,
+        // а стандартный механизм не знает где достать значения параметров для фабрики.
+        // [Inject]
+        // Ещё одна особенность, которую нужно решить - на стороне presenter интерфейс должен 
+        // быть WeakReference, чтобы позволить Unity удалить элемент из памяти.
+        private AdditiveScenePresenter presenter;
+        string sceneName;
+        AdditiveScenePresenter IAdditiveUiViewController.Presenter
+        {
+            get => presenter;
+            set
+            {
+                presenter = value;
+                // Не удаляем имя сцены после первого успешного определения. См. OnDestroy
+                sceneName = presenter?.sceneName ?? sceneName;
+            }
+        }
+
         public Text specText;
 
+
+        // Сегрегируем функционал, используя общий контекст MonoBehaviour
         void IAdditiveUiViewController.SetSpecText(string text)
         {
             specText.text = text;
@@ -38,12 +64,21 @@ namespace MyGame
                 {
                     specText = go.transform.Find("SpecText").GetComponent<Text>();
                 }
-            }            
+            }
+
+            presenter.SayHello();
         }
 
         void Update()
         {
             // Размещаем постоянную анимацию дополнения сцены здесь
+        }
+
+        void OnDestroy()
+        {
+            // presenter может быть null и поэтому имя сцены нельзя будет получить.
+            Debug.Log(String.Format("Additive scene '{0}' view controller disposed!", this.sceneName));
+            this.presenter = null;
         }
     }
 }

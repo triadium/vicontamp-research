@@ -6,6 +6,7 @@ using MessagePipe;
 
 namespace MyGame
 {   
+    // Для тестирования ITickable и шины с топиками.
     public class AuxServicedController : ITickable, IStartable, IDisposable
     {
         readonly HelloWorldService helloWorldService;
@@ -35,6 +36,7 @@ namespace MyGame
         void IStartable.Start()
         {
             var d = DisposableBag.CreateBuilder();
+            // Подписываемся на шину с топиком, равному AnimationSwitchEventSubscriber.Second
             subscriber.Subscribe(AnimationSwitchEventSubscriber.Second, OnAnimationSwitchEvent).AddTo(d);
             disposable = d.Build();            
         }
@@ -42,7 +44,7 @@ namespace MyGame
         void IDisposable.Dispose()
         {
             disposable.Dispose();
-            Debug.Log("GameController Disposed!");
+            Debug.Log("AuxServicedController Disposed!");
         }
 
         void ITickable.Tick()
