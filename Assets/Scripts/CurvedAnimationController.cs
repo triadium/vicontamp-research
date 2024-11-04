@@ -29,7 +29,7 @@ namespace MyGame
 
         IDisposable disposable;
         bool isAnimOn = false;
-        
+
 
         // Внедрение через метод и конструктор хорошо работают для обычных классов, а для MonoBehaviour только через поля можно нормально внедрять,
         // так как нет другой возможности сделать и readonly и назначить значение через внедрение.
@@ -47,8 +47,12 @@ namespace MyGame
         // Публичное API должно делать все необходимые действия и по возможности переиспользоваться
         // при обработке событий, чтобы не приходилось дублировать код и все цепочки намерений и событий
         // оставались стабильными при любом сценарии использования.
-        public void TurnAnimation(bool on = true) {
-            this.isAnimOn = on;
+        public void TurnAnimation(bool on = true)
+        {
+            if (!Globals.IsNull(gameObject) && gameObject.activeInHierarchy)
+            {
+                this.isAnimOn = on;
+            }
         }
 
         void Start()
@@ -67,7 +71,8 @@ namespace MyGame
             // Подписчик при получении очередного события проходится по всем зарегестированным у него обработчикам и вызывает их с передачей им полученного экземпляра события.
             // Лямбда-функция и методы могут быть обработчиками событий. В данном случае две лямбда-функции используется, обрабатывая данные объекта "на месте".
             subscriberOfAnimationSwitchEvent.Subscribe<AnimationSwitchEventSubscriber, AnimationSwitchEvent>(AnimationSwitchEventSubscriber.First, v => this.TurnAnimation(v.isOn)).AddTo(d);
-            subscriberOfInt.Subscribe(x => {
+            subscriberOfInt.Subscribe(x =>
+            {
                 Debug.Log("CurvedAnimationView:" + x);
                 var delta = x * 0.001f;
                 startPosition.x += delta; // 
@@ -81,7 +86,7 @@ namespace MyGame
             if (isAnimOn)
             {
                 transform.position = new Vector3(startPosition.x, startPosition.y + curve.Evaluate(Time.time), startPosition.z);
-            }            
+            }
         }
 
         void OnDestroy()

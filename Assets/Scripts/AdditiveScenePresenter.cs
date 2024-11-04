@@ -46,7 +46,8 @@ namespace MyGame
             // Подвох такого подхода в том, что мы нигде в объектах не должны использовать IPostStartable интерфейс 
             // на зависимых объектах от этого события и от состояния Presenter инстанса.
             // Но по IPostStartable можно легко отследить какие инстансы будут обрабатывать этот этап.
-            uiViewController.SetSpecText(this.sceneName);
+            // uiViewController.SetSpecText(this.sceneName);
+            uiViewController.SetSpecText(Application.consoleLogPath);
             publisherOfAdditiveSceneLoadedEvent.Publish(new AdditiveSceneLoadedEvent(this.sceneName));
             Debug.Log(String.Format("Additive scene '{0}' loaded!", this.sceneName));
         }

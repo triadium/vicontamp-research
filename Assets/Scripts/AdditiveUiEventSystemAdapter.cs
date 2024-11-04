@@ -7,6 +7,7 @@ using MessagePipe;
 using Cysharp.Threading.Tasks;
 using Random = UnityEngine.Random;
 
+
 namespace MyGame
 {
     // Адаптеры UI Event System обычно определяются отдельно от UI View Controller,
@@ -33,6 +34,33 @@ namespace MyGame
         [Inject]
         readonly AdditiveScenePresenter additiveScenePresenter;
 
+        public SimpleController simpleController;
+
+        IEnumerator Start()
+        {
+            object obj = simpleController;
+            Debug.LogWarningFormat("1) SimpleController ref is NULL: {0}", obj == null);
+            Debug.LogWarningFormat("1) SimpleController is NULL: {0}", Globals.IsNull(simpleController));
+            if (obj != null) { simpleController.SwitchAnimation(1); }
+            Destroy(simpleController);
+            obj = simpleController;
+            Debug.LogWarningFormat("2) SimpleController ref is NULL: {0}", obj == null);
+            Debug.LogWarningFormat("2) SimpleController is NULL: {0}", Globals.IsNull(simpleController));
+            if (obj != null) { simpleController.SwitchAnimation(2); }
+            yield return new WaitForEndOfFrame();
+            obj = simpleController;
+            Debug.LogWarningFormat("3) SimpleController ref is NULL: {0}", obj == null);
+            Debug.LogWarningFormat("3) SimpleController is NULL: {0}", Globals.IsNull(simpleController));
+            if (obj != null) { simpleController.SwitchAnimation(3); }
+
+            // GC let's do it!
+            simpleController = null;
+            obj = simpleController;
+            Debug.LogWarningFormat("4) SimpleController ref is NULL: {0}", obj == null);
+            Debug.LogWarningFormat("4) SimpleController is NULL: {0}", Globals.IsNull(simpleController));
+            if (obj != null) { simpleController.SwitchAnimation(4); }
+        }
+
         public void OnToggleOneValueChanged(bool value)
         {
             Debug.Log(String.Format("Toggle One! New value: {0}", value));
@@ -52,7 +80,7 @@ namespace MyGame
             // а позиция, которую может указывать UI. На стороне "Создателя" обычно есть функция конвертации одной
             // системы координат в другую.
             // В некоторых "сложных" случаях вся конвертация  
-            publisherOfCreateCubeIntention.Publish(new CreateCubeIntention(Random.Range(-3f,3f), Random.Range(-3f, 3f), Random.Range(1, 101) >= 50));
+            publisherOfCreateCubeIntention.Publish(new CreateCubeIntention(Random.Range(-3f, 3f), Random.Range(-3f, 3f), Random.Range(1, 101) >= 50));
         }
 
         public async void OnButtonUnloadAdditive()

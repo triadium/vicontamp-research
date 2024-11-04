@@ -3,7 +3,7 @@ using Hime.Redist;
 using MathExp;
 
 // Имплементируем интерфейс действий для парсера математических выражений
-sealed class Evaluator : MathExpParser.IActions
+public sealed class Evaluator : MathExpParser.IActions
 {
     // Реализация основывается просто на стековой машине
     // Терминалы - кладём на верх стека, конвертируя из строки в float число (known as System.Single)
