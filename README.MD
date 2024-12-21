@@ -100,8 +100,6 @@
 * [CubeCreator.cs](Assets/Scripts/CubeCreator.cs)
 * [AdditiveUiEventSystemAdapter.cs](Assets/Scripts/AdditiveUiEventSystemAdapter.cs)
 * [MathExp/Evaluator.cs](Assets/Scripts/MathExp/Evaluator.cs)
-* [MathExp/MathExpLexer.cs](Assets/Scripts/MathExp/MathExpLexer.cs)
-* [MathExp/MathExpParser.cs](Assets/Scripts/MathExp/MathExpParser.cs)
 
 ## Что почитать
 
