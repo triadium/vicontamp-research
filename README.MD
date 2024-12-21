@@ -74,7 +74,7 @@
 
 * [GameLifetimeScope.cs](Assets/Scripts/GameLifetimeScope.cs)
 * [AnimationCurveData.cs](Assets/Scripts/AnimationCurveData.cs) -> [Ожидание завершения задания загрузки](Assets/Scripts/GameLifetimeScope.cs#L90)
-* [CubeAssetData.cs](CubeAssetData.cs) -> [Ожидание завершения дженерик-задания загрузки](Assets/Scripts/GameLifetimeScope.cs#L91)
+* [CubeAssetData.cs](Assets/Scripts/CubeAssetData.cs) -> [Ожидание завершения дженерик-задания загрузки](Assets/Scripts/GameLifetimeScope.cs#L91)
 * [Кусок кода в GameLifetimeScope.cs](Assets/Scripts/GameLifetimeScope.cs#L94) `using (Enqueue(innerBuilder => { ... })){ await SceneManager.LoadSceneAsync... }`
 * [LoadAdditiveSceneIntention.cs](Assets/Scripts/LoadAdditiveSceneIntention.cs)
 * [AdditiveSceneLoadedEvent.cs](Assets/Scripts/AdditiveSceneLoadedEvent.cs)
